@@ -140,5 +140,56 @@ pipeline {
 
             }
         }
+
+        stage('Update GitOps') {
+            steps {
+                container('node') {
+                    withCredentials([
+                        sshUserPrivateKey(
+                            credentialsId: 'github-ssh',
+                            keyFileVariable: 'SSH_KEY',
+                            usernameVariable: 'SSH_USER'
+                        )
+                    ]) {
+                        sh '''
+                            mkdir -p ~/.ssh
+
+                            cp "$SSH_KEY" ~/.ssh/id_ed25519
+                            chmod 600 ~/.ssh/id_ed25519
+
+                            ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+                            rm -rf gitops
+
+                            git clone \
+                                git@github.com:lycody2003/tasknest-infrastructure.git \
+                                gitops
+
+                            cd gitops
+
+                            git config user.name "Jenkins"
+                            git config user.email "jenkins@tasknest.local"
+
+                            sed -i 's#image: lycody/tasknest-backend:.*#image: lycody/tasknest-backend:test#' \
+                                applications/backend/deployment.yaml
+
+                            sed -i 's#image: lycody/tasknest-frontend:.*#image: lycody/tasknest-frontend:test#' \
+                                applications/frontend/deployment.yaml
+
+                            git add \
+                                applications/backend/deployment.yaml \
+                                applications/frontend/deployment.yaml
+
+                            git diff --cached
+
+                            git commit -m "chore: update TaskNest images" || true
+
+                            git push origin main
+                        '''
+                    }
+                }
+            }
+        }
+
     }
 }
