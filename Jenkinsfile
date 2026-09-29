@@ -3,6 +3,10 @@ pipeline {
         label 'tasknest-node'
     }
 
+    options {
+        skipDefaultCheckout(true)
+    }
+
     stages {
         stage('Checkout') {
             steps {
