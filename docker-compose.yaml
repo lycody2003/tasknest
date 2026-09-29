@@ -1,0 +1,49 @@
+services:
+  mongodb:
+    image: mongo:7
+    container_name: tasknest-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: tasknest
+      MONGO_INITDB_ROOT_PASSWORD: change_this_password
+      MONGO_INITDB_DATABASE: tasknest
+    ports:
+      - "27017:27017"
+      - "27016:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "-u", "tasknest", "-p", "change_this_password", "--authenticationDatabase", "admin", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    container_name: backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      MONGODB_URI: mongodb://tasknest:change_this_password@mongodb:27017/tasknest?authSource=admin
+      JWT_SECRET: replace_with_a_long_random_secret_before_deploying
+      CLIENT_ORIGIN: http://localhost:8080
+    ports:
+      - "4000:4000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    restart: unless-stopped
+    environment:
+      NUXT_PUBLIC_API_BASE: http://localhost:4000/api
+    ports:
+      - "8080:3000"
+    depends_on:
+      - backend
+
+volumes:
+  mongo_data:
