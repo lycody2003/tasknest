@@ -80,6 +80,7 @@ pipeline {
                                 --context="${WORKSPACE}/backend" \
                                 --dockerfile="${WORKSPACE}/backend/Dockerfile" \
                                 --no-push \
+                                --snapshot-mode=redo \
                                 --destination=lycody/tasknest-backend:test
                             '''
                         }
@@ -94,6 +95,7 @@ pipeline {
                                 --context="${WORKSPACE}/frontend" \
                                 --dockerfile="${WORKSPACE}/frontend/Dockerfile" \
                                 --no-push \
+                                --snapshot-mode=redo \
                                 --destination=lycody/tasknest-frontend:test
                             '''
                         }
