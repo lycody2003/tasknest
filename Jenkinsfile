@@ -23,12 +23,16 @@ pipeline {
             steps {
                 container('node') {
                     script {
+                        sh '''
+                            git config --global --add safe.directory "$WORKSPACE"
+                        '''
+
                         env.IMAGE_TAG = sh(
                             script: 'git rev-parse --short HEAD',
                             returnStdout: true
                         ).trim()
 
-                        echo "Image tag: ${env.IMAGE_TAG}"
+                        echo "Generated image tag: ${env.IMAGE_TAG}"
                     }
                 }
             }
