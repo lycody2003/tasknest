@@ -43,5 +43,31 @@ pipeline {
                 }
             }
         }
+
+        stage('Test') {
+            parallel {
+                stage('Backend Tests') {
+                    steps {
+                        container('node') {
+                            dir('backend') {
+                                sh 'npm ci'
+                                sh 'npm test'
+                            }
+                        }
+                    }
+                }
+
+                stage('Frontend Tests') {
+                    steps {
+                        container('node') {
+                            dir('frontend') {
+                                sh 'npm ci'
+                                sh 'npm test'
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
