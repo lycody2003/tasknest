@@ -170,10 +170,10 @@ pipeline {
                             git config user.name "Jenkins"
                             git config user.email "jenkins@tasknest.local"
 
-                            sed -i 's#image: lycody/tasknest-backend:.*#image: lycody/tasknest-backend:test#' \
+                            sed -i 's#image: lycody/tasknest-backend:.*#image: lycody/tasknest-backend:1.0.1#' \
                                 applications/backend/deployment.yaml
 
-                            sed -i 's#image: lycody/tasknest-frontend:.*#image: lycody/tasknest-frontend:test#' \
+                            sed -i 's#image: lycody/tasknest-frontend:.*#image: lycody/tasknest-frontend:1.0.1#' \
                                 applications/frontend/deployment.yaml
 
                             git add \
