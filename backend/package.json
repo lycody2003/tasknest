@@ -5,8 +5,10 @@
   "description": "TaskNest REST API",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "dev": "nuxt dev --host 0.0.0.0",
+    "build": "nuxt build",
+    "start": "node .output/server/index.mjs",
+    "lint": "eslint ."
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -19,6 +21,9 @@
     "mongoose": "^8.9.5"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.11.0",
+    "globals": "^17.12.0",
     "nodemon": "^3.1.9"
   }
 }

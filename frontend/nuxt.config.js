@@ -8,7 +8,7 @@ export default defineNuxtConfig({
     host: "0.0.0.0",
   },
 
-  modules: ["@pinia/nuxt"],
+  modules: ["@pinia/nuxt", "@nuxt/eslint"],
 
   css: ["~/assets/css/main.css"],
 

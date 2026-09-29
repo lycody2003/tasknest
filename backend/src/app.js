@@ -3,7 +3,6 @@ const cors = require('cors');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const auth = require('./middleware/auth');
-const asyncHandler = require('./utils/asyncHandler');
 const AppError = require('./utils/AppError');
 const errorHandler = require('./middleware/errorHandler');
 

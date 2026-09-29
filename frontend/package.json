@@ -2,12 +2,20 @@
   "name": "tasknest-frontend",
   "version": "1.0.0",
   "private": true,
-  "scripts": { "dev": "nuxt dev --host 0.0.0.0", "build": "nuxt build", "start": "node .output/server/index.mjs" },
+  "scripts": {
+    "dev": "nuxt dev --host 0.0.0.0",
+    "build": "nuxt build",
+    "start": "node .output/server/index.mjs",
+    "lint": "eslint ."
+  },
   "dependencies": {
     "@pinia/nuxt": "^0.9.0",
     "nuxt": "^3.15.2",
     "pinia": "^2.3.0",
     "vue": "^3.5.13"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@nuxt/eslint": "^1.17.0",
+    "eslint": "^10.11.0"
+  }
 }
