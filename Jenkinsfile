@@ -8,6 +8,7 @@ pipeline {
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 git(
@@ -20,6 +21,7 @@ pipeline {
 
         stage('Quality Code') {
             parallel {
+
                 stage('Backend Lint') {
                     steps {
                         container('node') {
@@ -46,6 +48,7 @@ pipeline {
 
         stage('Test') {
             parallel {
+
                 stage('Backend Tests') {
                     steps {
                         container('node') {
@@ -70,19 +73,34 @@ pipeline {
             }
         }
 
-        stage('Docker Build') {
+        stage('Docker Build & Push') {
             parallel {
+
                 stage('Backend Image') {
                     steps {
                         container('kaniko') {
-                            sh '''
-                                /kaniko/executor \
-                                --context="${WORKSPACE}/backend" \
-                                --dockerfile="${WORKSPACE}/backend/Dockerfile" \
-                                --no-push \
-                                --snapshot-mode=redo \
-                                --destination=lycody/tasknest-backend:test
-                            '''
+                            withCredentials([
+                                usernamePassword(
+                                    credentialsId: 'dockerhub-credentials',
+                                    usernameVariable: 'DOCKERHUB_USERNAME',
+                                    passwordVariable: 'DOCKERHUB_TOKEN'
+                                )
+                            ]) {
+                                sh '''
+                                    mkdir -p /kaniko/.docker
+
+                                    AUTH=$(printf "%s:%s" "$DOCKERHUB_USERNAME" "$DOCKERHUB_TOKEN" | base64 | tr -d '\\n')
+
+                                    printf '{"auths":{"https://index.docker.io/v1/":{"auth":"%s"}}}' "$AUTH" \
+                                        > /kaniko/.docker/config.json
+
+                                    /kaniko/executor \
+                                        --context="${WORKSPACE}/backend" \
+                                        --dockerfile="${WORKSPACE}/backend/Dockerfile" \
+                                        --destination=lycody/tasknest-backend:test \
+                                        --snapshot-mode=redo
+                                '''
+                            }
                         }
                     }
                 }
@@ -90,14 +108,28 @@ pipeline {
                 stage('Frontend Image') {
                     steps {
                         container('kaniko') {
-                            sh '''
-                                /kaniko/executor \
-                                --context="${WORKSPACE}/frontend" \
-                                --dockerfile="${WORKSPACE}/frontend/Dockerfile" \
-                                --no-push \
-                                --snapshot-mode=redo \
-                                --destination=lycody/tasknest-frontend:test
-                            '''
+                            withCredentials([
+                                usernamePassword(
+                                    credentialsId: 'dockerhub-credentials',
+                                    usernameVariable: 'DOCKERHUB_USERNAME',
+                                    passwordVariable: 'DOCKERHUB_TOKEN'
+                                )
+                            ]) {
+                                sh '''
+                                    mkdir -p /kaniko/.docker
+
+                                    AUTH=$(printf "%s:%s" "$DOCKERHUB_USERNAME" "$DOCKERHUB_TOKEN" | base64 | tr -d '\\n')
+
+                                    printf '{"auths":{"https://index.docker.io/v1/":{"auth":"%s"}}}' "$AUTH" \
+                                        > /kaniko/.docker/config.json
+
+                                    /kaniko/executor \
+                                        --context="${WORKSPACE}/frontend" \
+                                        --dockerfile="${WORKSPACE}/frontend/Dockerfile" \
+                                        --destination=lycody/tasknest-frontend:test \
+                                        --snapshot-mode=redo
+                                '''
+                            }
                         }
                     }
                 }
