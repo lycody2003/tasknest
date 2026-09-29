@@ -99,7 +99,7 @@ pipeline {
                                     /kaniko/executor \
                                         --context="${WORKSPACE}/backend" \
                                         --dockerfile="${WORKSPACE}/backend/Dockerfile" \
-                                        --destination=lycody/tasknest-backend:1.0.0 \
+                                        --destination=lycody/tasknest-backend:1.0.1 \
                                         --snapshot-mode=redo
                                 '''
                             }
@@ -130,7 +130,7 @@ pipeline {
                                     /kaniko/executor \
                                         --context="${WORKSPACE}/frontend" \
                                         --dockerfile="${WORKSPACE}/frontend/Dockerfile" \
-                                        --destination=lycody/tasknest-frontend:1.0.0 \
+                                        --destination=lycody/tasknest-frontend:1.0.1 \
                                         --snapshot-mode=redo
                                 '''
                             }

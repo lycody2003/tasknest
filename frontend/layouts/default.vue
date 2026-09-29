@@ -12,7 +12,7 @@
       </div>
     </aside>
     <main class="main-area">
-      <header class="topbar"><div><div class="eyebrow">YOUR WORKSPACE</div><div class="welcome">Make progress, <span>{{ firstName }}</span>.</div></div><div class="top-actions"><span class="live-dot"/> Workspace active <div class="avatar small">{{ initials }}</div></div></header>
+      <header class="topbar"><div><div class="eyebrow">YOUR WORKSPACE V: 1.0.1</div><div class="welcome">Make progress, <span>{{ firstName }}</span>.</div></div><div class="top-actions"><span class="live-dot"/> Workspace active <div class="avatar small">{{ initials }}</div></div></header>
       <section class="page-content"><slot /></section>
     </main>
   </div>
