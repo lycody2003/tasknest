@@ -19,6 +19,21 @@ pipeline {
             }
         }
 
+        stage('Get Image Tag') {
+            steps {
+                container('node') {
+                    script {
+                        env.IMAGE_TAG = sh(
+                            script: 'git rev-parse --short HEAD',
+                            returnStdout: true
+                        ).trim()
+
+                        echo "Image tag: ${env.IMAGE_TAG}"
+                    }
+                }
+            }
+        }
+
         stage('Quality Code') {
             parallel {
 
@@ -96,10 +111,12 @@ pipeline {
                                     printf '{"auths":{"https://index.docker.io/v1/":{"auth":"%s"}}}' "$AUTH" \
                                         > /kaniko/.docker/config.json
 
+                                    echo "Building backend image: $IMAGE_TAG"
+
                                     /kaniko/executor \
                                         --context="${WORKSPACE}/backend" \
                                         --dockerfile="${WORKSPACE}/backend/Dockerfile" \
-                                        --destination=lycody/tasknest-backend:1.0.1 \
+                                        --destination=lycody/tasknest-backend:$IMAGE_TAG \
                                         --snapshot-mode=redo
                                 '''
                             }
@@ -127,10 +144,12 @@ pipeline {
                                     printf '{"auths":{"https://index.docker.io/v1/":{"auth":"%s"}}}' "$AUTH" \
                                         > /kaniko/.docker/config.json
 
+                                    echo "Building frontend image: $IMAGE_TAG"
+
                                     /kaniko/executor \
                                         --context="${WORKSPACE}/frontend" \
                                         --dockerfile="${WORKSPACE}/frontend/Dockerfile" \
-                                        --destination=lycody/tasknest-frontend:1.0.1 \
+                                        --destination=lycody/tasknest-frontend:$IMAGE_TAG \
                                         --snapshot-mode=redo
                                 '''
                             }
@@ -170,10 +189,12 @@ pipeline {
                             git config user.name "Jenkins"
                             git config user.email "jenkins@tasknest.local"
 
-                            sed -i 's#image: lycody/tasknest-backend:.*#image: lycody/tasknest-backend:1.0.1#' \
+                            echo "Updating GitOps to image tag: $IMAGE_TAG"
+
+                            sed -i 's#image: lycody/tasknest-backend:.*#image: lycody/tasknest-backend:'"$IMAGE_TAG"'#' \
                                 applications/backend/deployment.yaml
 
-                            sed -i 's#image: lycody/tasknest-frontend:.*#image: lycody/tasknest-frontend:1.0.1#' \
+                            sed -i 's#image: lycody/tasknest-frontend:.*#image: lycody/tasknest-frontend:'"$IMAGE_TAG"'#' \
                                 applications/frontend/deployment.yaml
 
                             git add \
@@ -182,7 +203,7 @@ pipeline {
 
                             git diff --cached
 
-                            git commit -m "chore: update TaskNest images" || true
+                            git commit -m "chore: update TaskNest images to $IMAGE_TAG" || true
 
                             git push origin main
                         '''
