@@ -29,4 +29,10 @@ export default defineNuxtConfig({
       ],
     },
   },
+
+  routeRules: {
+    "/api/**": {
+      proxy: "http://tasknest-backend:4000/api/**",
+    },
+  },
 });
