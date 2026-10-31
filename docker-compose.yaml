@@ -20,7 +20,7 @@ services:
 
   backend:
     build: ./backend
-    container_name: backend
+    container_name: tasknest-backend
     restart: unless-stopped
     environment:
       NODE_ENV: production
@@ -36,7 +36,7 @@ services:
 
   frontend:
     build: ./frontend
-    container_name: frontend
+    container_name: tasknest-frontend
     restart: unless-stopped
     environment:
       NUXT_PUBLIC_API_BASE: http://localhost:4000/api
